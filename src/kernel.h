@@ -1,6 +1,7 @@
 #include "module.h"
 #include <iostream>
 #include <signal.h>
+#include <chrono>
 
 // Motor commands
 enum Command
