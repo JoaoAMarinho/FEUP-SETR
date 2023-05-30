@@ -44,6 +44,7 @@ void schedSchedule()
 void schedDispatch()
 {
     int prev_task = currTask;
+    std::chrono::steady_clock::time_point begin, end;
     for (int x = 0; x < currTask; x++)
     {
         if (tasks[x].exec && tasks[x].func)
@@ -51,7 +52,10 @@ void schedDispatch()
             tasks[x].exec = 0;
             currTask = x;
             enableInterrupts();
+            begin = std::chrono::steady_clock::now();
             tasks[x].func();
+            end = std::chrono::steady_clock::now();
+            std::cout << "Task " << x << " execution time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
             disableInterrupts();
             currTask = prev_task;
             /*Delete if one-shot */
@@ -190,6 +194,7 @@ void motorTask()
         break;
     }
     }
+    motorBuffer = none;
 }
 
 void inputsControlTask()
