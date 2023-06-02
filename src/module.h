@@ -21,6 +21,18 @@ class Remote
 public:
     Remote();
     std::string remoteCommand();
+    void destroy();
+
+private:
+    PyObject *object;
+};
+
+class Voice
+{
+public:
+    Voice();
+    std::string voiceCommand();
+    void destroy();
 
 private:
     PyObject *object;

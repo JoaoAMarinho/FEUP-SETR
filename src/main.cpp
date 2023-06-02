@@ -2,11 +2,16 @@
 
 int main()
 {
+    // Initializes the Python interpreter
+    setenv("PYTHONPATH", ".", 1);
+    Py_Initialize();
+
     AlphaBot ab;
     Remote rm;
+    Voice vc;
     bool run = true;
 
-    setupTasks(&ab, &rm);
+    setupTasks(&ab, &rm, &vc);
     schedInit(&run);
 
     while (run)
@@ -14,6 +19,9 @@ int main()
     };
 
     ab.destroy();
+    rm.destroy();
+    vc.destroy();
+    Py_Finalize();
 
     return 0;
 }

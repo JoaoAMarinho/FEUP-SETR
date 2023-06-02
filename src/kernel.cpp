@@ -10,15 +10,16 @@ int currTask = NT;
 // AlphaBot instance
 AlphaBot *alphaBot;
 Remote *remote;
+Voice *voice;
 
 // Program execution
 bool *run;
 
 // Commands buffers
 Command motorBuffer = none;
-Command microBuffer = none;
+Command voiceBuffer = none;
 Command sensorBuffer = none;
-Command controllerBuffer = none;
+Command remoteBuffer = none;
 
 SchedTask::SchedTask(void (*func)(), int delay, int period) : func(func), delay(delay), period(period), exec(0) {}
 SchedTask::SchedTask() : func(NULL), delay(0), period(0), exec(0) {} // Default constructor
@@ -90,23 +91,25 @@ int schedAddTask(void (*func)(), int delay, int period)
     return -1;
 }
 
-void setupTasks(AlphaBot *ab, Remote *rm)
+void setupTasks(AlphaBot *ab, Remote *rm, Voice *vc)
 {
     alphaBot = ab;
     remote = rm;
+    voice = vc;
+
     // Add tasks
-    if (schedAddTask(&motorTask, 1, 10) == -1)
+    if (schedAddTask(&motorTask, 1, 1) == -1)
     {
-        std::cout << "Erro adding motor task";
+        std::cout << "Error adding motor task";
     };
-    if (schedAddTask(&inputsControlTask, 0, 10) == -1)
+    if (schedAddTask(&voiceControlTask, 3, 5) == -1)
     {
-        std::cout << "Erro adding inputs task";
+        std::cout << "Error adding voice task";
     };
-    if (schedAddTask(&remoteControlTask, 0, 5) == -1)
-    {
-        std::cout << "Erro adding remote task";
-    };
+    // if (schedAddTask(&remoteControlTask, 0, 3) == -1)
+    // {
+    //     std::cout << "Error adding remote task";
+    // };
 }
 
 void enableInterrupts()
@@ -156,6 +159,22 @@ void schedInit(bool *val)
 
 void motorTask()
 {
+    if (voiceBuffer != none)
+    {
+        motorBuffer = voiceBuffer;
+        voiceBuffer = none;
+    }
+    if (remoteBuffer != none)
+    {
+        motorBuffer = remoteBuffer;
+        remoteBuffer = none;
+    }
+    if (sensorBuffer != none)
+    {
+        motorBuffer = sensorBuffer;
+        sensorBuffer = none;
+    }
+
     switch (motorBuffer)
     {
     case forward:
@@ -197,23 +216,35 @@ void motorTask()
     motorBuffer = none;
 }
 
-void inputsControlTask()
+void voiceControlTask()
 {
-    if (microBuffer != none)
+    std::string value = (*voice).voiceCommand();
+    std::cout << "Voice" << std::endl;
+
+    if (value == "forward")
     {
-        motorBuffer = microBuffer;
-        microBuffer = none;
-    };
-    if (controllerBuffer != none)
+        voiceBuffer = forward;
+    }
+    else if (value == "stop")
     {
-        motorBuffer = controllerBuffer;
-        controllerBuffer = none;
-    };
-    if (sensorBuffer != none)
+        voiceBuffer = stop;
+    }
+    else if (value == "right")
     {
-        motorBuffer = sensorBuffer;
-        sensorBuffer = none;
-    };
+        voiceBuffer = right;
+    }
+    else if (value == "left")
+    {
+        voiceBuffer = left;
+    }
+    else if (value == "backward")
+    {
+        voiceBuffer = backward;
+    }
+    else
+    {
+        voiceBuffer = none;
+    }
 }
 
 void remoteControlTask()
@@ -221,26 +252,26 @@ void remoteControlTask()
     std::string value = (*remote).remoteCommand();
     if (value == "forward")
     {
-        controllerBuffer = forward;
+        remoteBuffer = forward;
     }
     else if (value == "stop")
     {
-        controllerBuffer = stop;
+        remoteBuffer = stop;
     }
     else if (value == "right")
     {
-        controllerBuffer = right;
+        remoteBuffer = right;
     }
     else if (value == "left")
     {
-        controllerBuffer = left;
+        remoteBuffer = left;
     }
     else if (value == "backward")
     {
-        controllerBuffer = backward;
+        remoteBuffer = backward;
     }
     else
     {
-        controllerBuffer = none;
+        remoteBuffer = none;
     }
 }

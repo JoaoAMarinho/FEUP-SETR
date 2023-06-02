@@ -38,7 +38,7 @@ void timerInterruptHandler(int signal);
 
 int schedAddTask(void (*func)(), int delay, int period, int priority);
 
-void setupTasks(AlphaBot *ab, Remote *rm);
+void setupTasks(AlphaBot *ab, Remote *rm, Voice *vc);
 
 void enableInterrupts();
 
@@ -50,6 +50,6 @@ void schedInit(bool *val);
 
 void motorTask();
 
-void inputsControlTask();
+void voiceControlTask();
 
 void remoteControlTask();
