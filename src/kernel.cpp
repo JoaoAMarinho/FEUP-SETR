@@ -21,8 +21,8 @@ Command voiceBuffer = none;
 Command sensorBuffer = none;
 Command remoteBuffer = none;
 
-SchedTask::SchedTask(void (*func)(), int delay, int period) : func(func), delay(delay), period(period), exec(0) {}
 SchedTask::SchedTask() : func(NULL), delay(0), period(0), exec(0) {} // Default constructor
+SchedTask::SchedTask(void (*func)(), int delay, int period) : func(func), delay(delay), period(period), exec(0) {}
 
 void schedSchedule()
 {

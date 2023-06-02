@@ -17,12 +17,12 @@ enum Command
 // Task struct representing a single task
 struct SchedTask
 {
-    /* period in ticks */
-    int period;
-    /* ticks to activate */
-    int delay;
     /* function pointer */
     void (*func)();
+    /* ticks to activate */
+    int delay;
+    /* period in ticks */
+    int period;
     /* activation counter */
     int exec;
 
