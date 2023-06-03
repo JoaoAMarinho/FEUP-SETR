@@ -11,6 +11,7 @@ int currTask = NT;
 AlphaBot *alphaBot;
 Remote *remote;
 Voice *voice;
+Sensor *sensor;
 
 // Program execution
 bool *run;
@@ -19,7 +20,7 @@ bool *run;
 Command motorBuffer = none;
 Command voiceBuffer = none;
 Command sensorBuffer = none;
-Command remoteBuffer = none;
+Command remoteBuffer = none; 
 
 SchedTask::SchedTask() : func(NULL), delay(0), period(0), exec(0) {} // Default constructor
 SchedTask::SchedTask(void (*func)(), int delay, int period) : func(func), delay(delay), period(period), exec(0) {}
@@ -30,7 +31,7 @@ void schedSchedule()
     {
         if (!tasks[x].func)
             continue;
-        if (tasks[x].delay != 0)
+        if (tasks[x].delay > 0)
         {
             tasks[x].delay--;
         }
@@ -56,7 +57,7 @@ void schedDispatch()
             begin = std::chrono::steady_clock::now();
             tasks[x].func();
             end = std::chrono::steady_clock::now();
-            std::cout << "Task " << x << " execution time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+            std::cout << "Task " << x+1 << " execution time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
             disableInterrupts();
             currTask = prev_task;
             /*Delete if one-shot */
@@ -91,18 +92,23 @@ int schedAddTask(void (*func)(), int delay, int period)
     return -1;
 }
 
-void setupTasks(AlphaBot *ab, Remote *rm, Voice *vc)
+void setupTasks(AlphaBot *ab, Remote *rm, Voice *vc, Sensor *ss)
 {
     alphaBot = ab;
     remote = rm;
     voice = vc;
+    sensor = ss;
 
     // Add tasks
-    if (schedAddTask(&motorTask, 1, 1) == -1)
+    if (schedAddTask(&motorTask, 1, 2) == -1)
     {
         std::cout << "Error adding motor task";
     };
-    if (schedAddTask(&voiceControlTask, 3, 5) == -1)
+    if (schedAddTask(&sensorControlTask, 2, 3) == -1)
+    {
+        std::cout << "Error adding sensor task";
+    };
+    if (schedAddTask(&voiceControlTask, 3, 3) == -1)
     {
         std::cout << "Error adding voice task";
     };
@@ -214,6 +220,21 @@ void motorTask()
     }
     }
     motorBuffer = none;
+}
+
+void sensorControlTask()
+{
+    std::string value = (*sensor).sensorCommand();
+    std::cout << "Sensor" << std::endl;
+
+    if (value == "stop")
+    {
+        sensorBuffer = stop;
+    }
+    else
+    {
+        sensorBuffer = none;
+    }
 }
 
 void voiceControlTask()

@@ -9,9 +9,10 @@ int main()
     AlphaBot ab;
     Remote rm;
     Voice vc;
+    Sensor ss;
     bool run = true;
 
-    setupTasks(&ab, &rm, &vc);
+    setupTasks(&ab, &rm, &vc, &ss);
     schedInit(&run);
 
     while (run)
@@ -21,6 +22,7 @@ int main()
     ab.destroy();
     rm.destroy();
     vc.destroy();
+    ss.destroy();
     Py_Finalize();
 
     return 0;

@@ -37,3 +37,14 @@ public:
 private:
     PyObject *object;
 };
+
+class Sensor
+{
+public:
+    Sensor();
+    std::string sensorCommand();
+    void destroy();
+
+private:
+    PyObject *object;
+};

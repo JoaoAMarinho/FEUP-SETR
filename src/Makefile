@@ -1,4 +1,4 @@
-CC = g++
+CC = g++ -g
 
 CFLAGS = -Wall -I/usr/include/python3.7
 PYTHONFLAGS = -lwiringPi -lpython3.7m
