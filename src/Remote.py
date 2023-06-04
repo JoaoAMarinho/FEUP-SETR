@@ -77,7 +77,7 @@ class Remote(object):
 				self.setPWMA(self.PWM)
 				self.setPWMB(self.PWM)
 				print(PWM, " cmd")
-		return None
+		return "None"
 	
 	def remoteCommand(self):
 		for i in range(50000):

@@ -1,7 +1,7 @@
 #include "kernel.h"
 
-const int NT = 3;
-const int TICK_RATE = 200000; // 0.2 seconds
+const int NT = 4;
+const int TICK_RATE = 300000; // 0.2 seconds
 
 // Scheduler tasks variables
 SchedTask tasks[NT];
@@ -60,6 +60,7 @@ void schedDispatch()
             std::cout << "Task " << x+1 << " execution time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
             disableInterrupts();
             currTask = prev_task;
+
             /*Delete if one-shot */
             if (!tasks[x].period)
                 tasks[x].func = NULL;
@@ -100,7 +101,11 @@ void setupTasks(AlphaBot *ab, Remote *rm, Voice *vc, Sensor *ss)
     sensor = ss;
 
     // Add tasks
-    if (schedAddTask(&motorTask, 1, 2) == -1)
+    if (schedAddTask(&voiceControlTask, 3, 5) == -1)
+    {
+        std::cout << "Error adding voice task";
+    };
+    if (schedAddTask(&motorTask, 1, 3) == -1)
     {
         std::cout << "Error adding motor task";
     };
@@ -108,11 +113,7 @@ void setupTasks(AlphaBot *ab, Remote *rm, Voice *vc, Sensor *ss)
     {
         std::cout << "Error adding sensor task";
     };
-    if (schedAddTask(&voiceControlTask, 3, 3) == -1)
-    {
-        std::cout << "Error adding voice task";
-    };
-    // if (schedAddTask(&remoteControlTask, 0, 3) == -1)
+    // if (schedAddTask(&remoteControlTask, 2, 5) == -1)
     // {
     //     std::cout << "Error adding remote task";
     // };
@@ -261,6 +262,10 @@ void voiceControlTask()
     else if (value == "backward")
     {
         voiceBuffer = backward;
+    }
+    else if (value == "kill") {
+        voiceBuffer = stop;
+        closeHandler(-1);
     }
     else
     {

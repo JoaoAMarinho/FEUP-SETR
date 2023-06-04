@@ -10,6 +10,7 @@ class Voice(object):
         self.move_forward = r"(move )?forward"
         self.move_back = r"(move )?back"
         self.stop = r"stop"
+        self.kill = r"kill"
 
         # Initialize the recognizer
         self.r = sr.Recognizer()
@@ -35,31 +36,22 @@ class Voice(object):
                 # Print each alternative
                 for alternative in alternatives:
                     transcript = alternative["transcript"]
-                    match = re.match(self.move_x_forward, transcript)
-                    if match:
-                        number = int(match.group(2))
-                        print("Number of meters:", number)
-                    elif re.match(self.move_forward, transcript):
-                        print("forward")
+                    if re.match(self.move_forward, transcript):
                         return "forward"
                     elif re.match(self.move_back, transcript):
-                        print("back")
-                        return "back"
+                        return "backward"
                     elif re.match(self.turn_left, transcript):
-                        print("left")
                         return "left"
                     elif re.match(self.turn_right, transcript):
-                        print("right")
                         return "right"
                     elif re.match(self.stop, transcript):
-                        print("stop")
                         return "stop"
-                    
+                    elif re.match(self.kill, transcript):
+                        return "kill"
+
             except:
                 return "None"
                 # except sr.UnknownValueError:
                 #     continue
                 # except sr.RequestError as e:
                 #     print("Não foi possível solicitar os resultados da API de reconhecimento de fala do Google; {0}".format(e))
-
-# Voice().voiceCommand()

@@ -12,10 +12,10 @@ class Sensor(object):
 		GPIO.setup(self.DL,GPIO.IN,GPIO.PUD_UP)
 	
 	def sensorCommand(self):
-		for i in range(500):
+		for i in range(200):
 			DR_status = GPIO.input(self.DR)
 			DL_status = GPIO.input(self.DL)
 
 			if ((DL_status == 0) or (DR_status == 0)):
 				return "stop"
-		return None
+		return "None"
